@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión | Catálogo Digital</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilos específicos para login */
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #3498db;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: fadeIn 0.6s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .auth-header {
+            background: var(--primary);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .auth-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .auth-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .auth-logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+        
+        .auth-body {
+            padding: 40px 30px;
+        }
+        
+        .auth-form {
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #95a5a6;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        
+        .btn-auth {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn-auth:hover {
+            background: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-auth:active {
+            transform: translateY(0);
+        }
+        
+        .btn-auth-secondary {
+            background: var(--secondary);
+        }
+        
+        .btn-auth-secondary:hover {
+            background: #c0392b;
+        }
+        
+        .auth-links {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        .auth-links a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .auth-links a:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+        
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: #95a5a6;
+        }
+        
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e0e0e0;
+        }
+        
+        .auth-divider span {
+            padding: 0 15px;
+        }
+        
+        .auth-footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            color: #7f8c8d;
+        }
+        
+        .auth-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .auth-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .auth-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .auth-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .auth-message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+        
+        .back-home:hover {
+            color: var(--accent);
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .auth-container {
+                border-radius: 15px;
+            }
+            
+            .auth-header {
+                padding: 30px 20px;
+            }
+            
+            .auth-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .auth-body {
+                padding: 30px 20px;
+            }
+            
+            .form-control {
+                padding: 12px 15px;
+            }
+            
+            .btn-auth {
+                padding: 14px;
+                font-size: 1rem;
+            }
+        }
+        
+        .password-requirements {
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+        
+        .requirement {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 3px;
+        }
+        
+        .requirement i {
+            font-size: 0.8rem;
+        }
+        
+        .requirement.valid i {
+            color: #27ae60;
+        }
+        
+        .requirement.invalid i {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="fas fa-store"></i>
+            </div>
+            <h1>Iniciar Sesión</h1>
+            <p>Accede a tu panel de administración</p>
+        </div>
+        
+        <div class="auth-body">
+            <!-- Mensaje de autenticación -->
+            <div id="authMessage" class="auth-message" style="display: none;"></div>
+            
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">
+                        <i class="fas fa-envelope"></i> Correo Electrónico
+                    </label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">
+                        <i class="fas fa-lock"></i> Contraseña
+                    </label>
+                    <div class="password-container">
+                        <input type="password" id="loginPassword" class="form-control" placeholder="Tu contraseña" required>
+                        <button type="button" class="toggle-password" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="text-align: right;">
+                    <a href="recuperar.html" style="font-size: 0.9rem;">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </div>
+                
+                <button type="submit" class="btn-auth" id="loginButton">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    <span id="loginSpinner" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                </button>
+            </form>
+            
+            <div class="auth-divider">
+                <span>¿No tienes cuenta?</span>
+            </div>
+            
+            <div class="auth-links">
+                <a href="register.html" class="btn-auth btn-auth-secondary" style="display: block; text-align: center;">
+                    <i class="fas fa-user-plus"></i> Crear Cuenta Nueva
+                </a>
+                
+                <a href="index.html" class="back-home">
+                    <i class="fas fa-arrow-left"></i> Volver al inicio
+                </a>
+            </div>
+        </div>
+        
+        <div class="auth-footer">
+            <p>© 2024 Catálogo Digital Pro. Todos los derechos reservados.</p>
+            <p>¿Necesitas ayuda? <a href="mailto:soporte@catalogodigital.com">Contáctanos</a></p>
+        </div>
+    </div>
+
+    <!-- Firebase y autenticación -->
+    <script type="module" src="firebase-config.js"></script>
+    <script src="auth-firebase.js"></script>
+    
+    <script>
+        // Esperar a que Firebase esté listo
+        window.addEventListener('firebase-ready', function() {
+            console.log('Firebase listo, configurando formulario de login...');
+            setupLoginForm();
+        });
+
+        function setupLoginForm() {
+            const loginForm = document.getElementById('loginForm');
+            const loginButton = document.getElementById('loginButton');
+            const loginSpinner = document.getElementById('loginSpinner');
+            const togglePassword = document.getElementById('togglePassword');
+            const loginPassword = document.getElementById('loginPassword');
+            
+            // Mostrar/ocultar contraseña
+            togglePassword.addEventListener('click', function() {
+                const type = loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+                loginPassword.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+            
+            // Manejar envío del formulario
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                // Validaciones básicas
+                if (!email || !password) {
+                    showAuthMessage('Por favor, completa todos los campos', 'error');
+                    return;
+                }
+                
+                // Mostrar spinner y deshabilitar botón
+                loginButton.disabled = true;
+                loginSpinner.style.display = 'inline-block';
+                loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciando...';
+                
+                try {
+                    // Usar la función de autenticación de Firebase
+                    const result = await window.firebaseAuth.loginUser(email, password);
+                    
+                    if (result.success) {
+                        showAuthMessage(result.message, 'success');
+                        
+                        // Redirigir después de 1 segundo
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1000);
+                    } else {
+                        showAuthMessage(result.message, 'error');
+                        loginButton.disabled = false;
+                        loginSpinner.style.display = 'none';
+                        loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
+                    }
+                } catch (error) {
+                    console.error('Error en login:', error);
+                    showAuthMessage('Error al iniciar sesión. Intenta nuevamente.', 'error');
+                    loginButton.disabled = false;
+                    loginSpinner.style.display = 'none';
+                    loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i> Iniciar Sesión';
+                }
+            });
+        }
+
+        function showAuthMessage(message, type) {
+            const authMessage = document.getElementById('authMessage');
+            authMessage.textContent = message;
+            authMessage.className = `auth-message ${type}`;
+            authMessage.style.display = 'flex';
+            
+            // Auto-ocultar después de 5 segundos
+            setTimeout(() => {
+                authMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Inicialización cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si ya hay un usuario autenticado
+            const currentUser = window.firebaseAuth?.getCurrentUser?.();
+            if (currentUser) {
+                // Si ya está autenticado, redirigir al inicio
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Tienda Ejemplo | Catálogo Digital Pro</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏬</text></svg>">
+    
+    <!-- Firebase -->
+    <script type="module" src="firebase-config.js"></script>
+    
+    <style>
+        /* Estilos específicos para la portada profesional */
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Header fijo profesional */
+        .header-profesional {
+            background-color: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 15px 0;
+        }
+        
+        .header-profesional .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-profesional {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin: 0;
+        }
+        
+        .logo-text p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        /* Navegación principal */
+        .nav-profesional {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .nav-profesional a {
+            color: var(--primary);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .nav-profesional a:hover {
+            background-color: var(--light);
+            color: var(--secondary);
+        }
+        
+        .nav-profesional a.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .demo-button {
+            background: linear-gradient(135deg, var(--secondary) 0%, #c0392b 100%);
+            color: white !important;
+            margin-left: 10px;
+        }
+        
+        /* Hero Section con slider */
+        .hero-section {
+            margin-top: 80px;
+            position: relative;
+            height: 600px;
+            overflow: hidden;
+            border-radius: 0 0 30px 30px;
+        }
+        
+        .hero-slider {
+            display: flex;
+            width: 300%;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+        
+        .hero-slide {
+            width: 33.333%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .slide-1 {
+            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), 
+                        url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .slide-2 {
+            background: linear-gradient(rgba(231, 76, 60, 0.8), rgba(231, 76, 60, 0.8)), 
+                        url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .slide-3 {
+            background: linear-gradient(rgba(52, 152, 219, 0.8), rgba(52, 152, 219, 0.8)), 
+                        url('https://images.unsplash.com/photo-1472851294608-062f824d29cc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            max-width: 800px;
+            width: 90%;
+            z-index: 2;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-hero {
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-hero-primary {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .btn-hero-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn-hero-secondary {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-hero-secondary:hover {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        /* Controles del slider */
+        .slider-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 3;
+        }
+        
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .slider-dot.active {
+            background-color: white;
+            transform: scale(1.2);
+        }
+        
+        /* Secciones de información */
+        .section {
+            padding: 100px 20px;
+        }
+        
+        .section-light {
+            background-color: #f8f9fa;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 60px;
+            line-height: 1.6;
+        }
+        
+        .section-title::after {
+            content: '';
+';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            margin: 15px auto 30px;
+            border-radius: 2px;
+        }
+        
+        /* Sobre nosotros */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .about-image img {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .about-content h3 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .about-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #5a6c7d;
+            margin-bottom: 30px;
+        }
+        
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .features-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .features-list i {
+            color: var(--secondary);
+            font-size: 1.2rem;
+        }
+        
+        /* Misión y Visión */
+        .mission-vision-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .mission-card, .vision-card {
+            background-color: white;
+            padding: 50px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .mission-card:hover, .vision-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .mission-icon, .vision-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .mission-card h3, .vision-card h3 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .mission-card p, .vision-card p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #5a6c7d;
+        }
+        
+        /* Productos destacados */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .product-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--secondary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            padding: 25px;
+        }
+        
+        .product-category {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .product-name {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .product-description {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+        
+        .product-price {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .price span {
+            font-size: 1rem;
+            color: #95a5a6;
+            text-decoration: line-through;
+            margin-left: 10px;
+        }
+        
+        .btn-product {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-product:hover {
+            background-color: var(--secondary);
+        }
+        
+        /* Ubicación */
+        .location-section {
+            background: linear-gradient(135deg, var(--primary) 0%, #1a252f 100%);
+            color: white;
+        }
+        
+        .location-section .section-title {
+            color: white;
+        }
+        
+        .location-section .section-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .location-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: center;
+        }
+        
+        #map {
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .location-info h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .location-details {
+            margin-bottom: 30px;
+        }
+        
+        .location-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .location-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .location-text h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.2rem;
+        }
+        
+        .location-text p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        /* Testimonios */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .testimonial-card {
+            background-color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        
+        .testimonial-text {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #5a6c7d;
+            margin-bottom: 25px;
+            font-style: italic;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .testimonial-text::before {
+            content: '"';
+            font-size: 4rem;
+            color: var(--light);
+            position: absolute;
+            left: -10px;
+            top: -20px;
+            font-family: Georgia, serif;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .author-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .author-info h4 {
+            margin: 0 0 5px 0;
+            color: var(--primary);
+        }
+        
+        .author-info p {
+            margin: 0;
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+        
+        /* CTA final */
+        .cta-section {
+            background: linear-gradient(135deg, var(--secondary) 0%, #c0392b 100%);
+            color: white;
+            text-align: center;
+            border-radius: 30px;
+            padding: 80px 40px;
+            max-width: 1000px;
+            margin: 0 auto 100px;
+        }
+        
+        .cta-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Footer */
+        .footer-profesional {
+            background-color: var(--primary);
+            color: white;
+            padding: 70px 0 30px;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto 50px;
+            padding: 0 20px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+        }
+        
+        /* ==================== */
+        /* CORRECCIÓN DE SUPERPOSICIÓN EN PORTADA */
+        /* ==================== */
+        
+        /* Asegurar que el header esté por encima de todo */
+        .header-profesional {
+            z-index: 1000 !important;
+        }
+        
+        /* Notificaciones: deben estar por encima del header */
+        .notification {
+            z-index: 10000 !important;
+            position: fixed !important;
+        }
+        
+        /* Ajuste del hero-section para que no quede detrás del header */
+        .hero-section {
+            margin-top: 80px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* En móviles, el header es más alto, ajustamos */
+        @media (max-width: 768px) {
+            .hero-section {
+                margin-top: 120px;
+            }
+            
+            /* Asegurar que las notificaciones no se salgan de la pantalla en móviles */
+            .notification {
+                top: 100px !important;
+                right: 10px !important;
+                left: 10px !important;
+                width: calc(100% - 20px) !important;
+                max-width: none !important;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 2.8rem;
+            }
+            
+            .about-grid,
+            .mission-vision-grid,
+            .location-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .about-image {
+                order: -1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-profesional .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-profesional {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero-section {
+                height: 500px;
+            }
+            
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .section {
+                padding: 60px 20px;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+            
+            .products-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-section {
+                padding: 60px 20px;
+                margin: 0 20px 60px;
+            }
+            
+            .cta-title {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-section {
+                height: 400px;
+            }
+            
+            .hero-title {
+                font-size: 1.8rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-hero {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+            
+            .mission-card, .vision-card {
+                padding: 30px 20px;
+            }
+            
+            /* Ajustes adicionales para móviles pequeños */
+            .notification {
+                top: 120px !important;
+                padding: 12px 15px !important;
+                font-size: 0.9rem !important;
+            }
+        }
+
+        /* Estilos para notificaciones */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+        }
+
+        .notification.success {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .notification.error {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .notification.info {
+            background-color: #3498db;
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header profesional fijo -->
+    <header class="header-profesional">
+        <div class="container">
+            <div class="logo-profesional" id="storeLogo">
+                <div class="logo-icon" id="logoIconContainer">
+                    <i class="fas fa-store" id="defaultLogoIcon"></i>
+                </div>
+                <div class="logo-text">
+                    <h1 id="storeNameHeader">Tienda Ejemplo</h1>
+                    <p id="storeSloganHeader">Catálogo Digital Profesional</p>
+                </div>
+            </div>
+            
+            <nav class="nav-profesional">
+                <a href="#inicio" class="active">Inicio</a>
+                <a href="#productos">Productos</a>
+                <a href="#nosotros">Nosotros</a>
+                <a href="#ubicacion">Ubicación</a>
+                <a href="#testimonios">Testimonios</a>
+                <a href="#contacto">Contacto</a>
+                
+                <!-- Enlace de autenticación dinámico -->
+                <a href="login.html" id="authLink" style="display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-user"></i>
+                    <span id="authText">Iniciar Sesión</span>
+                </a>
+                
+                <a href="configuracion.html" class="demo-button" id="configLink" style="display: none;">
+                    <i class="fas fa-cog"></i> Configuración
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section con Slider -->
+    <section id="inicio" class="hero-section">
+        <div class="hero-slider">
+            <div class="hero-slide slide-1">
+                <div class="hero-content">
+                    <h1 class="hero-title" id="heroTitle1">Bienvenido a nuestra tienda</h1>
+                    <p class="hero-subtitle" id="heroSubtitle1">Descubre productos de calidad con la mejor experiencia de compra online. Tu satisfacción es nuestra prioridad.</p>
+                    <div class="hero-buttons">
+                        <a href="#productos" class="btn-hero btn-hero-primary">
+                            <i class="fas fa-shopping-bag"></i> Ver Productos
+                        </a>
+                        <a href="#ubicacion" class="btn-hero btn-hero-secondary">
+                            <i class="fas fa-map-marker-alt"></i> Visítanos
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-slide slide-2">
+                <div class="hero-content">
+                    <h1 class="hero-title" id="heroTitle2">Ofertas Especiales</h1>
+                    <p class="hero-subtitle" id="heroSubtitle2">Aprovecha nuestros descuentos exclusivos en productos seleccionados. ¡Solo por tiempo limitado!</p>
+                    <div class="hero-buttons">
+                        <a href="#productos" class="btn-hero btn-hero-primary">
+                            <i class="fas fa-tag"></i> Ver Ofertas
+                        </a>
+                        <a href="#contacto" class="btn-hero btn-hero-secondary">
+                            <i class="fas fa-cart-plus"></i> Comprar Ahora
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-slide slide-3">
+                <div class="hero-content">
+                    <h1 class="hero-title" id="heroTitle3">Catálogo Digital</h1>
+                    <p class="hero-subtitle" id="heroSubtitle3">Explora todos nuestros productos desde la comodidad de tu hogar. Pedidos por WhatsApp con un solo clic.</p>
+                    <div class="hero-buttons">
+                        <a href="#productos" class="btn-hero btn-hero-primary">
+                            <i class="fas fa-external-link-alt"></i> Ver Catálogo
+                        </a>
+                        <a href="#nosotros" class="btn-hero btn-hero-secondary">
+                            <i class="fas fa-info-circle"></i> Conócenos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slider-controls">
+            <button class="slider-dot active" data-slide="0"></button>
+            <button class="slider-dot" data-slide="1"></button>
+            <button class="slider-dot" data-slide="2"></button>
+        </div>
+    </section>
+
+    <!-- Sobre Nosotros -->
+    <section id="nosotros" class="section section-light">
+        <div class="container">
+            <h2 class="section-title" id="aboutTitle">Sobre Nuestra Tienda</h2>
+            <p class="section-subtitle" id="aboutSubtitle">Más de 10 años ofreciendo productos de calidad y un servicio excepcional a nuestros clientes.</p>
+            
+            <div class="about-grid">
+                <div class="about-image">
+                    <img id="aboutImage" src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Nuestra tienda">
+                </div>
+                <div class="about-content">
+                    <h3 id="aboutContentTitle">Tu tienda de confianza</h3>
+                    <p id="aboutContent">Fundada en 2013, hemos crecido de una pequeña tienda local a un negocio reconocido en la región. Nuestra misión es proporcionar productos de alta calidad a precios justos, combinando la tradición del comercio local con las ventajas de la tecnología moderna.</p>
+                    
+                    <ul class="features-list">
+                        <li><i class="fas fa-check-circle"></i> Productos 100% garantizados</li>
+                        <li><i class="fas fa-check-circle"></i> Envíos a toda la ciudad</li>
+                        <li><i class="fas fa-check-circle"></i> Atención personalizada</li>
+                        <li><i class="fas fa-check-circle"></i> Soporte post-venta</li>
+                        <li><i class="fas fa-check-circle"></i> Pagos seguros</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Misión y Visión -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title" id="missionTitle">Nuestra Filosofía</h2>
+            <p class="section-subtitle" id="missionSubtitle">Los valores que nos guían en cada decisión y cada interacción con nuestros clientes.</p>
+            
+            <div class="mission-vision-grid">
+                <div class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3>Nuestra Misión</h3>
+                    <p id="missionContent">Proveer productos de excelente calidad que mejoren la vida diaria de nuestros clientes, ofreciendo una experiencia de compra excepcional tanto en tienda física como en nuestro catálogo digital.</p>
+                </div>
+                
+                <div class="vision-card">
+                    <div class="vision-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Nuestra Visión</h3>
+                    <p id="visionContent">Ser la tienda de referencia en nuestra comunidad, reconocida por nuestra calidad, servicio y compromiso con la innovación digital para facilitar la vida de nuestros clientes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Productos Destacados -->
+    <section id="productos" class="section section-light">
+        <div class="container">
+            <h2 class="section-title" id="productsTitle">Productos Destacados</h2>
+            <p class="section-subtitle" id="productsSubtitle">Descubre nuestros productos más populares y las mejores ofertas de la temporada.</p>
+            
+            <div class="products-grid">
+                <!-- Producto 1 -->
+                <div class="product-card" id="product1">
+                    <div class="product-badge" id="product1Badge">25% OFF</div>
+                    <img id="product1Image" src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Cámara DSLR" class="product-image">
+                    <div class="product-info">
+                        <div class="product-category">Electrónica</div>
+                        <h3 class="product-name" id="product1Name">Cámara DSLR Profesional</h3>
+                        <p class="product-description" id="product1Description">Captura momentos inolvidables con esta cámara de alta resolución y múltiples lentes incluidos.</p>
+                        <div class="product-price">
+                            <div class="price" id="product1Price">
+                                $899.99 <span>$1,199.99</span>
+                            </div>
+                            <button class="btn-product" onclick="addToCartDemo(1)">
+                                <i class="fas fa-cart-plus"></i> Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Producto 2 -->
+                <div class="product-card" id="product2">
+                    <div class="product-badge" id="product2Badge">Nuevo</div>
+                    <img id="product2Image" src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Smartwatch" class="product-image">
+                    <div class="product-info">
+                        <div class="product-category">Wearables</div>
+                        <h3 class="product-name" id="product2Name">Smartwatch Deportivo</h3>
+                        <p class="product-description" id="product2Description">Monitoriza tu salud, recibe notificaciones y controla tu música desde tu muñeca.</p>
+                        <div class="product-price">
+                            <div class="price" id="product2Price">$249.99</div>
+                            <button class="btn-product" onclick="addToCartDemo(2)">
+                                <i class="fas fa-cart-plus"></i> Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Producto 3 -->
+                <div class="product-card" id="product3">
+                    <img id="product3Image" src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Zapatos Deportivos" class="product-image">
+                    <div class="product-info">
+                        <div class="product-category">Calzado</div>
+                        <h3 class="product-name" id="product3Name">Zapatos Deportivos Premium</h3>
+                        <p class="product-description" id="product3Description">Máxima comodidad y estilo para tus actividades diarias o entrenamientos.</p>
+                        <div class="product-price">
+                            <div class="price" id="product3Price">$129.99</div>
+                            <button class="btn-product" onclick="addToCartDemo(3)">
+                                <i class="fas fa-cart-plus"></i> Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 50px;">
+                <a href="index-catal.html" class="btn-hero btn-hero-primary" style="padding: 15px 40px; font-size: 1.2rem;">
+                    <i class="fas fa-external-link-alt"></i> Configurar Catálogo
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ubicación -->
+    <section id="ubicacion" class="section location-section">
+        <div class="container">
+            <h2 class="section-title">Nuestra Ubicación</h2>
+            <p class="section-subtitle">Visítanos en nuestro local físico o contáctanos para más información.</p>
+            
+            <div class="location-grid">
+                <div id="map"></div>
+                
+                <div class="location-info">
+                    <h3>Ven a conocernos</h3>
+                    <p id="locationReference">Estamos ubicados en el corazón de la ciudad, con fácil acceso y amplio estacionamiento.</p>
+                    
+                    <div class="location-details">
+                        <div class="location-item">
+                            <div class="location-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="location-text">
+                                <h4>Dirección</h4>
+                                <p id="locationAddress">Av. Principal 1234, Centro Comercial Plaza Mayor<br>Local 45, Caracas, Venezuela</p>
+                            </div>
+                        </div>
+                        
+                        <div class="location-item">
+                            <div class="location-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="location-text">
+                                <h4>Horario de Atención</h4>
+                                <p id="locationHours">Lunes a Viernes: 9:00 AM - 8:00 PM<br>Sábados: 9:00 AM - 6:00 PM<br>Domingos: 10:00 AM - 2:00 PM</p>
+                            </div>
+                        </div>
+                        
+                        <div class="location-item">
+                            <div class="location-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="location-text">
+                                <h4>Teléfono</h4>
+                                <p id="locationPhone">+58 123 456 7890</p>
+                            </div>
+                        </div>
+                        
+                        <div class="location-item">
+                            <div class="location-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="location-text">
+                                <h4>Email</h4>
+                                <p id="locationEmail">info@tiendaejemplo.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section id="testimonios" class="section">
+        <div class="container">
+            <h2 class="section-title" id="testimonialsTitle">Lo que dicen nuestros clientes</h2>
+            <p class="section-subtitle" id="testimonialsSubtitle">La satisfacción de nuestros clientes es nuestro mayor logro.</p>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text" id="testimonial1Text">Excelente atención y productos de primera calidad. El catálogo digital me permitió hacer mi pedido desde casa y recibirlo al día siguiente.</p>
+                    <div class="testimonial-author">
+                        <img id="testimonial1Image" src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="María González" class="author-avatar">
+                        <div class="author-info">
+                            <h4 id="testimonial1Author">María González</h4>
+                            <p id="testimonial1Position">Cliente desde 2018</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <p class="testimonial-text" id="testimonial2Text">La mejor tienda de la zona. Siempre encuentro lo que necesito y el servicio post-venta es excepcional. ¡Recomendado 100%!</p>
+                    <div class="testimonial-author">
+                        <img id="testimonial2Image" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Carlos Rodríguez" class="author-avatar">
+                        <div class="author-info">
+                            <h4 id="testimonial2Author">Carlos Rodríguez</h4>
+                            <p id="testimonial2Position">Cliente frecuente</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <p class="testimonial-text" id="testimonial3Text">Me encanta poder ver todos los productos desde mi celular y hacer el pedido por WhatsApp. ¡Muy práctico y eficiente!</p>
+                    <div class="testimonial-author">
+                        <img id="testimonial3Image" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Ana Martínez" class="author-avatar">
+                        <div class="author-info">
+                            <h4 id="testimonial3Author">Ana Martínez</h4>
+                            <p id="testimonial3Position">Cliente desde 2020</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section id="contacto" class="container">
+        <div class="cta-section">
+            <h2 class="cta-title">¿Listo para mejorar tu experiencia de compra?</h2>
+            <p class="cta-subtitle">Explora nuestro catálogo digital completo con todos los productos, categorías y la posibilidad de hacer pedidos directamente por WhatsApp.</p>
+            
+            <div class="hero-buttons">
+                <a href="configuracion.html" class="btn-hero btn-hero-primary" style="background-color: white; color: var(--secondary);">
+                    <i class="fas fa-cog"></i> Configurar Tienda
+                </a>
+                <a href="#ubicacion" class="btn-hero btn-hero-secondary" style="border-color: white; color: white;">
+                    <i class="fas fa-store"></i> Visitar Tienda Física
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-profesional">
+        <div class="footer-grid">
+            <div class="footer-column">
+                <h3 id="footerStoreName">Tienda Ejemplo</h3>
+                <p id="footerDescription" style="color: rgba(255, 255, 255, 0.7); line-height: 1.6; margin-bottom: 20px;">
+                    Tu tienda de confianza con más de 10 años de experiencia. Calidad, servicio y innovación digital.
+                </p>
+                <div class="social-links" id="socialLinksContainer">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Enlaces Rápidos</h3>
+                <ul class="footer-links">
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#productos">Productos</a></li>
+                    <li><a href="#nosotros">Nosotros</a></li>
+                    <li><a href="#ubicacion">Ubicación</a></li>
+                    <li><a href="#testimonios">Testimonios</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Categorías</h3>
+                <ul class="footer-links">
+                    <li><a href="#productos">Electrónica</a></li>
+                    <li><a href="#productos">Ropa y Moda</a></li>
+                    <li><a href="#productos">Hogar</a></li>
+                    <li><a href="#productos">Deportes</a></li>
+                    <li><a href="#productos">Ofertas</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Contacto</h3>
+                <ul class="footer-links" id="footerContact">
+                    <li><i class="fas fa-map-marker-alt" style="margin-right: 10px;"></i> Av. Principal 1234, Caracas</li>
+                    <li><i class="fas fa-phone" style="margin-right: 10px;"></i> +58 123 456 7890</li>
+                    <li><i class="fas fa-envelope" style="margin-right: 10px;"></i> info@tiendaejemplo.com</li>
+                    <li><i class="fas fa-clock" style="margin-right: 10px;"></i> Lun-Vie: 9am-8pm</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p id="footerCopyright">&copy; 2024 Tienda Ejemplo. Todos los derechos reservados. | 
+               <a href="configuracion.html" style="color: var(--accent);">Panel de Configuración</a> | 
+               Diseñado con ❤️ para emprendedores</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Autenticación con Firebase -->
+    <script src="auth-firebase.js"></script>
+    
+    <script>
+        // ==============================================
+        // SISTEMA DE CARGA DE CONFIGURACIÓN CON FIREBASE
+        // ==============================================
+
+        // Esperar a que Firebase esté listo
+        window.addEventListener('firebase-ready', async function() {
+            console.log('Firebase listo, cargando configuración...');
+            await loadAndApplyStoreConfig();
+            initPageComponents();
+        });
+
+        // Función para cargar configuración desde Firebase
+        async function loadStoreConfigFromFirebase() {
+            try {
+                const { db, doc, getDoc } = window.firebaseServices;
+                
+                // Obtener el storeId: primero de la URL, si no, del usuario actual, si no, 'default'
+                const urlParams = new URLSearchParams(window.location.search);
+                let storeId = urlParams.get('storeId');
+                
+                if (!storeId) {
+                    // Intentar obtener el usuario actual
+                    const currentUser = window.firebaseAuth?.getCurrentUser?.();
+                    storeId = currentUser?.uid;
+                }
+                
+                // Si no hay storeId, usar una tienda por defecto (puedes cambiar esto)
+                if (!storeId) {
+                    console.log('No hay storeId, usando tienda por defecto');
+                    return null;
+                }
+                
+                const storeRef = doc(db, "stores", storeId);
+                const storeDoc = await getDoc(storeRef);
+                
+                if (storeDoc.exists()) {
+                    console.log('✅ Configuración cargada desde Firebase');
+                    return storeDoc.data();
+                } else {
+                    console.log('⚠️ No se encontró configuración en Firebase para storeId:', storeId);
+                    return null;
+                }
+            } catch (error) {
+                console.error('❌ Error al cargar configuración desde Firebase:', error);
+                return null;
+            }
+        }
+
+        // Función principal para cargar y aplicar la configuración
+        async function loadAndApplyStoreConfig() {
+            const config = await loadStoreConfigFromFirebase();
+            if (config) {
+                applyStoreConfig(config);
+            } else {
+                // Si no hay configuración en Firebase, cargar del localStorage (fallback)
+                loadStoreConfigFromLocal();
+            }
+        }
+
+        // Función para cargar configuración desde localStorage (fallback)
+        function loadStoreConfigFromLocal() {
+            try {
+                const savedConfig = localStorage.getItem('storeConfig');
+                if (savedConfig) {
+                    const parsed = JSON.parse(savedConfig);
+                    console.log('✅ Configuración cargada desde localStorage (fallback)');
+                    applyStoreConfig(parsed);
+                } else {
+                    console.log('⚠️ Usando configuración por defecto');
+                }
+            } catch (error) {
+                console.error('❌ Error al cargar configuración local:', error);
+            }
+        }
+
+        // Función para aplicar la configuración (igual que antes, pero asegurarse de que existe)
+        function applyStoreConfig(config) {
+            if (!config) return;
+            
+            console.log('🎨 Aplicando configuración de la tienda...');
+            
+            // Aplicar información general primero
+            if (config.general) {
+                applyGeneralInfo(config.general);
+            }
+            
+            // Aplicar colores CSS
+            if (config.colors) {
+                applyColors(config.colors);
+            }
+            
+            // Aplicar textos
+            if (config.texts) {
+                applyTexts(config.texts);
+            }
+            
+            // Aplicar logo
+            if (config.logo) {
+                applyLogo(config.logo);
+            }
+            
+            // Aplicar redes sociales
+            if (config.socialMedia) {
+                applySocialMedia(config.socialMedia);
+            }
+            
+            // Aplicar información de contacto
+            if (config.contact) {
+                applyContactInfo(config.contact);
+            }
+            
+            // Aplicar imágenes
+            if (config.images) {
+                applyImages(config.images);
+            }
+            
+            // Aplicar ubicación
+            if (config.location) {
+                applyLocation(config.location);
+            }
+            
+            console.log('✅ Configuración aplicada correctamente');
+        }
+
+        // Nueva función para aplicar información general
+        function applyGeneralInfo(general) {
+            if (general.storeName) {
+                const storeNameHeader = document.getElementById('storeNameHeader');
+                if (storeNameHeader) storeNameHeader.textContent = general.storeName;
+                
+                const pageTitle = document.getElementById('pageTitle');
+                if (pageTitle) pageTitle.textContent = general.storeName + ' | Catálogo Digital Pro';
+                
+                const footerStoreName = document.getElementById('footerStoreName');
+                if (footerStoreName) footerStoreName.textContent = general.storeName;
+            }
+            
+            if (general.storeSlogan) {
+                const storeSloganHeader = document.getElementById('storeSloganHeader');
+                if (storeSloganHeader) storeSloganHeader.textContent = general.storeSlogan;
+            }
+            
+            if (general.metaTitle) {
+                const pageTitle = document.getElementById('pageTitle');
+                if (pageTitle) pageTitle.textContent = general.metaTitle;
+            }
+        }
+
+        // Aplicar colores
+        function applyColors(colors) {
+            if (colors.primary) {
+                document.documentElement.style.setProperty('--primary', colors.primary);
+            }
+            if (colors.secondary) {
+                document.documentElement.style.setProperty('--secondary', colors.secondary);
+            }
+            if (colors.accent) {
+                document.documentElement.style.setProperty('--accent', colors.accent);
+            }
+            if (colors.background) {
+                document.documentElement.style.setProperty('--light', colors.background);
+            }
+        }
+
+        // Aplicar textos
+        function applyTexts(texts) {
+            // Hero Section
+            if (texts.hero) {
+                if (texts.hero.slide1) {
+                    const heroTitle1 = document.getElementById('heroTitle1');
+                    const heroSubtitle1 = document.getElementById('heroSubtitle1');
+                    if (heroTitle1) heroTitle1.textContent = texts.hero.slide1.title;
+                    if (heroSubtitle1) heroSubtitle1.textContent = texts.hero.slide1.subtitle;
+                }
+                
+                if (texts.hero.slide2) {
+                    const heroTitle2 = document.getElementById('heroTitle2');
+                    const heroSubtitle2 = document.getElementById('heroSubtitle2');
+                    if (heroTitle2) heroTitle2.textContent = texts.hero.slide2.title;
+                    if (heroSubtitle2) heroSubtitle2.textContent = texts.hero.slide2.subtitle;
+                }
+                
+                if (texts.hero.slide3) {
+                    const heroTitle3 = document.getElementById('heroTitle3');
+                    const heroSubtitle3 = document.getElementById('heroSubtitle3');
+                    if (heroTitle3) heroTitle3.textContent = texts.hero.slide3.title;
+                    if (heroSubtitle3) heroSubtitle3.textContent = texts.hero.slide3.subtitle;
+                }
+            }
+            
+            // Sobre Nosotros
+            if (texts.about) {
+                const aboutTitle = document.getElementById('aboutTitle');
+                const aboutSubtitle = document.getElementById('aboutSubtitle');
+                const aboutContentTitle = document.getElementById('aboutContentTitle');
+                const aboutContent = document.getElementById('aboutContent');
+                
+                if (aboutTitle) aboutTitle.textContent = texts.about.title;
+                if (aboutSubtitle) aboutSubtitle.textContent = texts.about.subtitle;
+                if (aboutContentTitle) aboutContentTitle.textContent = texts.about.contentTitle;
+                if (aboutContent) aboutContent.textContent = texts.about.content;
+            }
+            
+            // Misión y Visión
+            if (texts.mission) {
+                const missionTitle = document.getElementById('missionTitle');
+                const missionSubtitle = document.getElementById('missionSubtitle');
+                const missionContent = document.getElementById('missionContent');
+                const visionContent = document.getElementById('visionContent');
+                
+                if (missionTitle) missionTitle.textContent = texts.mission.title;
+                if (missionSubtitle) missionSubtitle.textContent = texts.mission.subtitle;
+                if (missionContent) missionContent.textContent = texts.mission.missionContent;
+                if (visionContent) visionContent.textContent = texts.mission.visionContent;
+            }
+            
+            // Productos
+            if (texts.products) {
+                const productsTitle = document.getElementById('productsTitle');
+                const productsSubtitle = document.getElementById('productsSubtitle');
+                
+                if (productsTitle) productsTitle.textContent = texts.products.title;
+                if (productsSubtitle) productsSubtitle.textContent = texts.products.subtitle;
+                
+                // Producto 1
+                if (texts.products.product1) {
+                    const product1Name = document.getElementById('product1Name');
+                    const product1Description = document.getElementById('product1Description');
+                    const product1Price = document.getElementById('product1Price');
+                    const product1Badge = document.getElementById('product1Badge');
+                    
+                    if (product1Name) product1Name.textContent = texts.products.product1.name;
+                    if (product1Description) product1Description.textContent = texts.products.product1.description;
+                    if (product1Price) {
+                        let priceHTML = texts.products.product1.price;
+                        if (texts.products.product1.oldPrice) {
+                            priceHTML += ` <span>${texts.products.product1.oldPrice}</span>`;
+                        }
+                        product1Price.innerHTML = priceHTML;
+                    }
+                    if (product1Badge && texts.products.product1.discount) {
+                        product1Badge.textContent = texts.products.product1.discount;
+                        product1Badge.style.display = 'block';
+                    } else if (product1Badge) {
+                        product1Badge.style.display = 'none';
+                    }
+                }
+                
+                // Producto 2
+                if (texts.products.product2) {
+                    const product2Name = document.getElementById('product2Name');
+                    const product2Description = document.getElementById('product2Description');
+                    const product2Price = document.getElementById('product2Price');
+                    const product2Badge = document.getElementById('product2Badge');
+                    
+                    if (product2Name) product2Name.textContent = texts.products.product2.name;
+                    if (product2Description) product2Description.textContent = texts.products.product2.description;
+                    if (product2Price) product2Price.textContent = texts.products.product2.price;
+                    if (product2Badge && texts.products.product2.discount) {
+                        product2Badge.textContent = texts.products.product2.discount;
+                        product2Badge.style.display = 'block';
+                    } else if (product2Badge) {
+                        product2Badge.style.display = 'none';
+                    }
+                }
+                
+                // Producto 3
+                if (texts.products.product3) {
+                    const product3Name = document.getElementById('product3Name');
+                    const product3Description = document.getElementById('product3Description');
+                    const product3Price = document.getElementById('product3Price');
+                    
+                    if (product3Name) product3Name.textContent = texts.products.product3.name;
+                    if (product3Description) product3Description.textContent = texts.products.product3.description;
+                    if (product3Price) product3Price.textContent = texts.products.product3.price;
+                }
+            }
+            
+            // Testimonios
+            if (texts.testimonials) {
+                const testimonialsTitle = document.getElementById('testimonialsTitle');
+                const testimonialsSubtitle = document.getElementById('testimonialsSubtitle');
+                
+                if (testimonialsTitle) testimonialsTitle.textContent = texts.testimonials.title;
+                if (testimonialsSubtitle) testimonialsSubtitle.textContent = texts.testimonials.subtitle;
+                
+                // Testimonio 1
+                if (texts.testimonials.testimonial1) {
+                    const testimonial1Text = document.getElementById('testimonial1Text');
+                    const testimonial1Author = document.getElementById('testimonial1Author');
+                    const testimonial1Position = document.getElementById('testimonial1Position');
+                    
+                    if (testimonial1Text) testimonial1Text.textContent = texts.testimonials.testimonial1.text;
+                    if (testimonial1Author) testimonial1Author.textContent = texts.testimonials.testimonial1.author;
+                    if (testimonial1Position) testimonial1Position.textContent = texts.testimonials.testimonial1.position || 'Cliente';
+                }
+                
+                // Testimonio 2
+                if (texts.testimonials.testimonial2) {
+                    const testimonial2Text = document.getElementById('testimonial2Text');
+                    const testimonial2Author = document.getElementById('testimonial2Author');
+                    const testimonial2Position = document.getElementById('testimonial2Position');
+                    
+                    if (testimonial2Text) testimonial2Text.textContent = texts.testimonials.testimonial2.text;
+                    if (testimonial2Author) testimonial2Author.textContent = texts.testimonials.testimonial2.author;
+                    if (testimonial2Position) testimonial2Position.textContent = texts.testimonials.testimonial2.position || 'Cliente frecuente';
+                }
+                
+                // Testimonio 3
+                if (texts.testimonials.testimonial3) {
+                    const testimonial3Text = document.getElementById('testimonial3Text');
+                    const testimonial3Author = document.getElementById('testimonial3Author');
+                    const testimonial3Position = document.getElementById('testimonial3Position');
+                    
+                    if (testimonial3Text) testimonial3Text.textContent = texts.testimonials.testimonial3.text;
+                    if (testimonial3Author) testimonial3Author.textContent = texts.testimonials.testimonial3.author;
+                    if (testimonial3Position) testimonial3Position.textContent = texts.testimonials.testimonial3.position || 'Cliente';
+                }
+            }
+            
+            // Footer
+            if (texts.footer) {
+                const footerDescription = document.getElementById('footerDescription');
+                const footerCopyright = document.getElementById('footerCopyright');
+                
+                if (footerDescription) footerDescription.textContent = texts.footer.description;
+                if (footerCopyright) {
+                    footerCopyright.textContent = texts.footer.copyright || '© 2024 Tienda Ejemplo. Todos los derechos reservados.';
+                }
+            }
+        }
+
+        // Aplicar logo
+        function applyLogo(logo) {
+            if (logo.type === 'image' && logo.image) {
+                const logoIconContainer = document.getElementById('logoIconContainer');
+                if (logoIconContainer) {
+                    // Limpiar contenido anterior
+                    logoIconContainer.innerHTML = '';
+                    
+                    // Crear imagen del logo
+                    const logoImg = document.createElement('img');
+                    logoImg.src = logo.image;
+                    logoImg.alt = "Logo de la tienda";
+                    logoImg.style.width = `${logo.width || 50}px`;
+                    logoImg.style.height = `${logo.height || 50}px`;
+                    logoImg.style.objectFit = 'contain';
+                    logoImg.style.borderRadius = '10px';
+                    
+                    // Agregar imagen al contenedor
+                    logoIconContainer.appendChild(logoImg);
+                    logoIconContainer.style.background = 'none';
+                }
+            }
+        }
+
+        // Aplicar redes sociales
+        function applySocialMedia(socialMedia) {
+            const socialLinksContainer = document.getElementById('socialLinksContainer');
+            if (!socialLinksContainer) return;
+            
+            // Limpiar enlaces existentes
+            socialLinksContainer.innerHTML = '';
+            
+            // Facebook
+            if (socialMedia.facebook && socialMedia.facebook.active && socialMedia.facebook.url) {
+                const facebookLink = createSocialLink('facebook', socialMedia.facebook.url);
+                socialLinksContainer.appendChild(facebookLink);
+            }
+            
+            // Instagram
+            if (socialMedia.instagram && socialMedia.instagram.active && socialMedia.instagram.url) {
+                const instagramLink = createSocialLink('instagram', socialMedia.instagram.url);
+                socialLinksContainer.appendChild(instagramLink);
+            }
+            
+            // WhatsApp
+            if (socialMedia.whatsapp && socialMedia.whatsapp.active && socialMedia.whatsapp.url) {
+                const whatsappNumber = socialMedia.whatsapp.url.replace(/\D/g, '');
+                const whatsappUrl = `https://wa.me/${whatsappNumber}`;
+                const whatsappLink = createSocialLink('whatsapp', whatsappUrl);
+                socialLinksContainer.appendChild(whatsappLink);
+            }
+            
+            // TikTok
+            if (socialMedia.tiktok && socialMedia.tiktok.active && socialMedia.tiktok.url) {
+                const tiktokLink = createSocialLink('tiktok', socialMedia.tiktok.url);
+                socialLinksContainer.appendChild(tiktokLink);
+            }
+            
+            // Twitter/X
+            if (socialMedia.twitter && socialMedia.twitter.active && socialMedia.twitter.url) {
+                const twitterLink = createSocialLink('twitter', socialMedia.twitter.url);
+                socialLinksContainer.appendChild(twitterLink);
+            }
+            
+            // YouTube
+            if (socialMedia.youtube && socialMedia.youtube.active && socialMedia.youtube.url) {
+                const youtubeLink = createSocialLink('youtube', socialMedia.youtube.url);
+                socialLinksContainer.appendChild(youtubeLink);
+            }
+            
+            // Si no hay redes sociales, mostrar iconos por defecto
+            if (socialLinksContainer.children.length === 0) {
+                socialLinksContainer.innerHTML = `
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                `;
+            }
+        }
+
+        function createSocialLink(platform, url) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            
+            const icon = document.createElement('i');
+            icon.className = `fab fa-${platform}`;
+            
+            link.appendChild(icon);
+            return link;
+        }
+
+        // Aplicar información de contacto
+        function applyContactInfo(contact) {
+            // Actualizar información en la sección de ubicación
+            const locationAddress = document.getElementById('locationAddress');
+            const locationHours = document.getElementById('locationHours');
+            const locationPhone = document.getElementById('locationPhone');
+            const locationEmail = document.getElementById('locationEmail');
+            const locationReference = document.getElementById('locationReference');
+            
+            if (locationAddress) {
+                let addressText = contact.address || 'Av. Principal 1234, Centro Comercial Plaza Mayor';
+                if (contact.city || contact.country) {
+                    addressText += `<br>Local 45, ${contact.city || 'Caracas'}, ${contact.country || 'Venezuela'}`;
+                }
+                locationAddress.innerHTML = addressText;
+            }
+            
+            if (locationHours && contact.hours) {
+                let hoursText = '';
+                if (contact.hours.weekdays) hoursText += `Lunes a Viernes: ${contact.hours.weekdays}<br>`;
+                if (contact.hours.saturday) hoursText += `Sábados: ${contact.hours.saturday}<br>`;
+                if (contact.hours.sunday) hoursText += `Domingos: ${contact.hours.sunday}`;
+                locationHours.innerHTML = hoursText;
+            }
+            
+            if (locationPhone && contact.phone) {
+                const formattedPhone = formatPhoneNumber(contact.phone);
+                locationPhone.textContent = `+${formattedPhone}`;
+            }
+            
+            if (locationEmail) {
+                locationEmail.textContent = contact.email || 'info@tiendaejemplo.com';
+            }
+            
+            if (locationReference) {
+                locationReference.textContent = contact.locationReference || 'Estamos ubicados en el corazón de la ciudad, con fácil acceso y amplio estacionamiento.';
+            }
+            
+            // Actualizar información en el footer
+            const footerContact = document.getElementById('footerContact');
+            if (footerContact) {
+                const contactItems = footerContact.querySelectorAll('li');
+                if (contactItems.length >= 4) {
+                    // Dirección
+                    contactItems[0].innerHTML = `<i class="fas fa-map-marker-alt" style="margin-right: 10px;"></i> ${contact.address || 'Av. Principal 1234'}, ${contact.city || 'Caracas'}`;
+                    
+                    // Teléfono
+                    if (contact.phone) {
+                        const formattedPhone = formatPhoneNumber(contact.phone);
+                        contactItems[1].innerHTML = `<i class="fas fa-phone" style="margin-right: 10px;"></i> +${formattedPhone}`;
+                    }
+                    
+                    // Email
+                    contactItems[2].innerHTML = `<i class="fas fa-envelope" style="margin-right: 10px;"></i> ${contact.email || 'info@tiendaejemplo.com'}`;
+                    
+                    // Horarios
+                    if (contact.hours) {
+                        contactItems[3].innerHTML = `<i class="fas fa-clock" style="margin-right: 10px;"></i> Lun-Vie: ${contact.hours.weekdays || '9am-8pm'}`;
+                    }
+                }
+            }
+        }
+
+        function formatPhoneNumber(phone) {
+            // Eliminar todo excepto números
+            const numbers = phone.replace(/\D/g, '');
+            return numbers;
+        }
+
+        // Aplicar imágenes
+        function applyImages(images) {
+            // Hero Images
+            if (images.hero1) {
+                const slide1 = document.querySelector('.slide-1');
+                if (slide1) {
+                    slide1.style.backgroundImage = `linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), url('${images.hero1}')`;
+                }
+            }
+            
+            if (images.hero2) {
+                const slide2 = document.querySelector('.slide-2');
+                if (slide2) {
+                    slide2.style.backgroundImage = `linear-gradient(rgba(231, 76, 60, 0.8), rgba(231, 76, 60, 0.8)), url('${images.hero2}')`;
+                }
+            }
+            
+            if (images.hero3) {
+                const slide3 = document.querySelector('.slide-3');
+                if (slide3) {
+                    slide3.style.backgroundImage = `linear-gradient(rgba(52, 152, 219, 0.8), rgba(52, 152, 219, 0.8)), url('${images.hero3}')`;
+                }
+            }
+            
+            // About Image
+            if (images.about) {
+                const aboutImg = document.getElementById('aboutImage');
+                if (aboutImg) {
+                    aboutImg.src = images.about;
+                }
+            }
+            
+            // Product Images
+            if (images.product1) {
+                const productImg1 = document.getElementById('product1Image');
+                if (productImg1) productImg1.src = images.product1;
+            }
+            
+            if (images.product2) {
+                const productImg2 = document.getElementById('product2Image');
+                if (productImg2) productImg2.src = images.product2;
+            }
+            
+            if (images.product3) {
+                const productImg3 = document.getElementById('product3Image');
+                if (productImg3) productImg3.src = images.product3;
+            }
+            
+            // Testimonial Images
+            if (images.testimonial1) {
+                const testimonialImg1 = document.getElementById('testimonial1Image');
+                if (testimonialImg1) testimonialImg1.src = images.testimonial1;
+            }
+            
+            if (images.testimonial2) {
+                const testimonialImg2 = document.getElementById('testimonial2Image');
+                if (testimonialImg2) testimonialImg2.src = images.testimonial2;
+            }
+            
+            if (images.testimonial3) {
+                const testimonialImg3 = document.getElementById('testimonial3Image');
+                if (testimonialImg3) testimonialImg3.src = images.testimonial3;
+            }
+        }
+
+        // Aplicar ubicación
+        function applyLocation(location) {
+            // Actualizar texto de referencia si existe
+            const locationReference = document.getElementById('locationReference');
+            if (locationReference && location.reference) {
+                locationReference.textContent = location.reference;
+            }
+            
+            // Actualizar mapa si hay coordenadas
+            if (location.coordinates && location.coordinates.lat && location.coordinates.lng) {
+                // Esta función se ejecutará cuando el mapa esté listo
+                window.updateMapLocation = function(map) {
+                    if (map) {
+                        map.setView([location.coordinates.lat, location.coordinates.lng], 15);
+                        
+                        // Limpiar marcadores anteriores
+                        map.eachLayer(function(layer) {
+                            if (layer instanceof L.Marker) {
+                                map.removeLayer(layer);
+                            }
+                        });
+                        
+                        // Añadir nuevo marcador
+                        L.marker([location.coordinates.lat, location.coordinates.lng])
+                            .addTo(map)
+                            .bindPopup('<b>Nuestra Tienda</b><br>¡Ven a visitarnos!')
+                            .openPopup();
+                    }
+                };
+            }
+        }
+
+        // ==============================================
+        // CÓDIGO ORIGINAL (CON MODIFICACIONES)
+        // ==============================================
+
+        // Inicializar componentes de la página
+        function initPageComponents() {
+            console.log('🚀 Inicializando componentes de la página...');
+            
+            // 1. Slider automático
+            let currentSlide = 0;
+            const slides = document.querySelectorAll('.hero-slide');
+            const dots = document.querySelectorAll('.slider-dot');
+            const totalSlides = slides.length;
+            
+            function showSlide(index) {
+                if (index >= totalSlides) currentSlide = 0;
+                if (index < 0) currentSlide = totalSlides - 1;
+                
+                document.querySelector('.hero-slider').style.transform = `translateX(-${currentSlide * 33.333}%)`;
+                
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentSlide);
+                });
+            }
+            
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    currentSlide = index;
+                    showSlide(currentSlide);
+                });
+            });
+            
+            // Auto slide cada 5 segundos
+            setInterval(() => {
+                currentSlide++;
+                showSlide(currentSlide);
+            }, 5000);
+            
+            // 2. Navegación suave
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        // Actualizar navegación activa
+                        document.querySelectorAll('.nav-profesional a').forEach(link => {
+                            link.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                        
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // 3. Mapa de ubicación (modificado para usar configuración)
+            const map = L.map('map').setView([10.4806, -66.9036], 15);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            L.marker([10.4806, -66.9036]).addTo(map)
+                .bindPopup('<b>Tienda Ejemplo</b><br>Av. Principal 1234, Caracas')
+                .openPopup();
+            
+            // Si hay una función para actualizar el mapa desde la configuración, ejecutarla
+            if (typeof window.updateMapLocation === 'function') {
+                window.updateMapLocation(map);
+            }
+            
+            // 4. Detectar scroll para cambiar navegación activa
+            const sections = document.querySelectorAll('section[id]');
+            
+            function updateActiveNav() {
+                let scrollY = window.pageYOffset;
+                
+                sections.forEach(section => {
+                    const sectionHeight = section.offsetHeight;
+                    const sectionTop = section.offsetTop - 150;
+                    const sectionId = section.getAttribute('id');
+                    
+                    if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                        document.querySelectorAll('.nav-profesional a').forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${sectionId}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }
+            
+            window.addEventListener('scroll', updateActiveNav);
+            
+            // 5. Demo de agregar al carrito
+            window.addToCartDemo = function(productId) {
+                const products = [
+                    { id: 1, name: 'Cámara DSLR Profesional' },
+                    { id: 2, name: 'Smartwatch Deportivo' },
+                    { id: 3, name: 'Zapatos Deportivos Premium' }
+                ];
+                
+                const product = products.find(p => p.id === productId);
+                
+                if (product) {
+                    showNotification(`[DEMO] ${product.name} agregado al carrito. En la versión completa, esto iría al carrito real.`, 'info');
+                }
+            };
+            
+            // 6. Función para mostrar notificaciones
+            function showNotification(message, type = 'info') {
+                // Obtener la altura del header para posicionar correctamente la notificación
+                const header = document.querySelector('.header-profesional');
+                let headerHeight = 80;
+                if (header) {
+                    headerHeight = header.offsetHeight;
+                }
+                
+                // Calcular posición top considerando la altura del header
+                const topPosition = headerHeight + 20;
+                
+                // Crear notificación
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: ${topPosition}px;
+                    right: 20px;
+                    background-color: ${type === 'info' ? '#3498db' : type === 'success' ? '#2ecc71' : '#e74c3c'};
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    z-index: 10000;
+                    animation: slideIn 0.3s ease;
+                    max-width: 350px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                `;
+                
+                notification.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 300);
+                }, 3000);
+            }
+            
+            // 7. Ajustar altura del hero-section dinámicamente
+            function adjustHeroMargin() {
+                const header = document.querySelector('.header-profesional');
+                const heroSection = document.querySelector('.hero-section');
+                
+                if (header && heroSection) {
+                    const headerHeight = header.offsetHeight;
+                    heroSection.style.marginTop = `${headerHeight}px`;
+                }
+            }
+            
+            // Ajustar en carga y en redimensionamiento
+            adjustHeroMargin();
+            window.addEventListener('resize', adjustHeroMargin);
+            
+            console.log('✅ Componentes de la página inicializados');
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Iniciando aplicación...');
+            // La configuración se cargará cuando Firebase esté listo
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Digital | Tu Negocio</title>
+    <link rel="stylesheet" href="styles-catal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📦</text></svg>">
+    
+    <!-- Firebase SDKs (Modular v10) -->
+    <script type="module" src="firebase-config.js"></script>
+</head>
+<body>
+    <!-- Header con navegación - AHORA FIJADO -->
+    <header class="header">
+        <div class="container">
+            <!-- Botón de finanzas DENTRO del header -->
+            <div id="finance-button-container" class="finance-button-container hidden">
+                <button id="finance-btn" class="btn-finance">
+                    <i class="fas fa-chart-line"></i> Finanzas
+                </button>
+            </div>
+            
+            <div class="logo">
+                <!-- Contenedor para logo de marca -->
+                <div class="brand-logo-container">
+                    <img id="brand-logo" src="" alt="Logo de la marca" class="brand-logo hidden">
+                    <div id="default-logo" class="default-logo">
+                        <i class="fas fa-store"></i>
+                    </div>
+                </div>
+                <div class="store-info">
+                    <h1 id="store-name">Cargando tienda...</h1>
+                    <p id="store-tagline" class="store-tagline">Catálogo Digital</p>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <!-- Botones dinámicos según estado de autenticación -->
+                <button id="auth-btn" class="btn btn-secondary">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+                <button id="my-store-btn" class="btn btn-secondary hidden">
+                    <i class="fas fa-store"></i> Mi Tienda
+                </button>
+                
+                <button id="view-cart" class="btn btn-primary">
+                    <i class="fas fa-shopping-cart"></i> Carrito <span id="cart-count">0</span>
+                </button>
+                
+                <button id="config-btn" class="btn btn-secondary hidden" title="Configuración">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Modal de Autenticación (Login/Registro) -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="auth-modal-title">Iniciar Sesión</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="login">Iniciar Sesión</button>
+                    <button class="tab-btn" data-tab="register">Crear Cuenta</button>
+                </div>
+                
+                <!-- Formulario de Login -->
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-email">Correo electrónico:</label>
+                        <input type="email" id="login-email" placeholder="tucorreo@ejemplo.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="login-password">Contraseña:</label>
+                        <input type="password" id="login-password" placeholder="••••••••" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Formulario de Registro -->
+                <form id="register-form" class="auth-form hidden">
+                    <div class="form-group">
+                        <label for="register-store-name">Nombre de tu tienda:</label>
+                        <input type="text" id="register-store-name" placeholder="Ej: Mi Tienda Online" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-email">Correo electrónico:</label>
+                        <input type="email" id="register-email" placeholder="tucorreo@ejemplo.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-password">Contraseña:</label>
+                        <input type="password" id="register-password" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-whatsapp">Número de WhatsApp (con código de país):</label>
+                        <input type="text" id="register-whatsapp" placeholder="Ej: 51912345678" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-user-plus"></i> Crear Cuenta
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Mensajes de error -->
+                <div id="auth-error" class="error-message hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuración de Tienda -->
+    <div id="config-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Configuración de Tienda</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="whatsapp-number">Número de WhatsApp (con código de país):</label>
+                    <input type="text" id="whatsapp-number" placeholder="Ej: 51912345678">
+                </div>
+                <div class="form-group">
+                    <label for="store-display-name">Nombre de la tienda:</label>
+                    <input type="text" id="store-display-name" placeholder="Ej: Mi Tienda Online">
+                </div>
+                
+                <!-- Logo de la marca -->
+                <div class="form-group">
+                    <label for="brand-logo-upload">Logo de la marca (JPG/PNG):</label>
+                    <div class="logo-upload-container">
+                        <input type="file" id="brand-logo-upload" accept="image/jpeg, image/png" class="logo-file">
+                        <div id="logo-preview" class="logo-preview">
+                            <p>Vista previa del logo:</p>
+                            <div class="preview-logo-container">
+                                <img id="logo-preview-image" src="" alt="Vista previa del logo" class="logo-preview-image hidden">
+                            </div>
+                        </div>
+                    </div>
+                    <p class="help-text">Tamaño recomendado: 200x200px. Máximo 2MB.</p>
+                </div>
+                
+                <!-- Selector de combinación de colores -->
+                <div class="form-group">
+                    <label for="color-scheme">Combinación de colores:</label>
+                    <div class="color-schemes-grid">
+                        <div class="color-scheme-option" data-scheme="whatsapp">
+                            <div class="color-preview whatsapp-scheme"></div>
+                            <span>WhatsApp</span>
+                        </div>
+                        <div class="color-scheme-option" data-scheme="blue">
+                            <div class="color-preview blue-scheme"></div>
+                            <span>Azul Profesional</span>
+                        </div>
+                        <div class="color-scheme-option" data-scheme="green">
+                            <div class="color-preview green-scheme"></div>
+                            <span>Verde Naturaleza</span>
+                        </div>
+                        <div class="color-scheme-option" data-scheme="purple">
+                            <div class="color-preview purple-scheme"></div>
+                            <span>Púrpura Creativo</span>
+                        </div>
+                        <div class="color-scheme-option" data-scheme="red">
+                            <div class="color-preview red-scheme"></div>
+                            <span>Rojo Pasión</span>
+                        </div>
+                        <div class="color-scheme-option" data-scheme="orange">
+                            <div class="color-preview orange-scheme"></div>
+                            <span>Naranja Energía</span>
+                        </div>
+                        <div class="color-scheme-option" data-scheme="black-silver">
+                            <div class="color-preview black-silver-scheme"></div>
+                            <span>Negro Plateado</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="selected-color-scheme" value="whatsapp">
+                </div>
+                
+                <div class="form-group">
+                    <label>Enlace de tu tienda:</label>
+                    <div class="store-link-container">
+                        <input type="text" id="store-link-input" readonly class="store-link-input">
+                        <button id="copy-link" class="btn btn-secondary btn-small">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <p class="help-text">Comparte este enlace con tus clientes</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="save-config" class="btn btn-primary">Guardar Configuración</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar/editar productos -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Agregar Producto</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="product-form">
+                    <div class="form-group">
+                        <label for="product-name">Nombre del producto *</label>
+                        <input type="text" id="product-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-price">Precio (en tu moneda) *</label>
+                        <input type="number" id="product-price" min="0" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-description">Descripción</label>
+                        <textarea id="product-description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-category">Categoría</label>
+                        <select id="product-category">
+                            <option value="">Sin categoría</option>
+                        </select>
+                        <p class="help-text">Selecciona una categoría existente o déjalo en blanco</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Imágenes del producto (mínimo 1, máximo 5)</label>
+                        <div class="image-help-note">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Recomendaciones:</strong> 
+                            • Sube imágenes cuadradas (1:1) de al menos 800x800 píxeles para mejor calidad.<br>
+                            • La primera imagen será la <strong>portada</strong> del producto.<br>
+                            • Puedes reordenar arrastrando o usando las flechas.
+                        </div>
+                        <div id="image-inputs-container" class="image-inputs">
+                            <!-- Las imágenes se cargarán aquí dinámicamente -->
+                        </div>
+                        <button type="button" id="add-image" class="btn btn-secondary btn-small">
+                            <i class="fas fa-plus"></i> Agregar otra imagen
+                        </button>
+                        <p class="help-text">Formatos aceptados: JPG, PNG. Tamaño máximo por imagen: 2MB.</p>
+                    </div>
+                    
+                    <input type="hidden" id="product-id">
+                    
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Guardar Producto</button>
+                        <button type="button" class="btn btn-secondary close-modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal del carrito -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Tu Carrito de Compras</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="cart-empty" class="empty-state">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Tu carrito está vacío</h3>
+                    <p>Agrega productos desde el catálogo</p>
+                </div>
+                
+                <div id="cart-items-container">
+                    <!-- Los productos del carrito se agregarán aquí dinámicamente -->
+                </div>
+                
+                <div id="cart-summary" class="cart-summary">
+                    <div class="summary-row">
+                        <span>Total:</span>
+                        <span id="cart-total">$0.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="clear-cart" class="btn btn-secondary">Vaciar Carrito</button>
+                <button id="checkout-whatsapp" class="btn btn-primary">
+                    <i class="fab fa-whatsapp"></i> Comprar por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para gestionar categorías -->
+    <div id="category-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Gestión de Categorías</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="new-category-name">Nueva categoría:</label>
+                    <div class="category-input-container">
+                        <input type="text" id="new-category-name" placeholder="Ej: Ropa, Electrónica, Hogar">
+                        <button id="add-category" class="btn btn-secondary btn-small">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+                <div id="categories-list" class="categories-list">
+                    <!-- Categorías se cargarán aquí -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary close-modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver imágenes en grande -->
+    <div id="image-viewer-modal" class="modal">
+        <div class="modal-content image-viewer-content">
+            <div class="modal-header">
+                <h2>Imagen del producto</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="image-viewer-container">
+                    <img id="viewer-main-image" src="" alt="Imagen del producto" class="viewer-image">
+                    <button id="viewer-prev" class="image-nav viewer-nav prev"><i class="fas fa-chevron-left"></i></button>
+                    <button id="viewer-next" class="image-nav viewer-nav next"><i class="fas fa-chevron-right"></i></button>
+                    <div class="image-counter-viewer">
+                        <span id="current-image-index">1</span> / <span id="total-images">1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <main class="container main-container">
+        <!-- Panel de administración (oculto por defecto) -->
+        <section id="admin-panel" class="hidden">
+            <div class="section-header">
+                <h2><i class="fas fa-user-shield"></i> Panel de Administración</h2>
+                <p>Gestiona los productos de tu catálogo</p>
+            </div>
+            
+            <div class="admin-actions">
+                <div class="admin-actions-left">
+                    <button id="add-product" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Agregar Producto
+                    </button>
+                    <button id="manage-categories" class="btn btn-secondary">
+                        <i class="fas fa-tags"></i> Categorías
+                    </button>
+                </div>
+                <div class="store-info-panel">
+                    <p><strong>Tu ID de tienda:</strong> <span id="store-id-display">cargando...</span></p>
+                </div>
+            </div>
+            
+            <div id="products-list" class="products-list">
+                <!-- Los productos se mostrarán aquí -->
+                <div class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <h3>No hay productos aún</h3>
+                    <p>Agrega tu primer producto para comenzar</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Catálogo para clientes (visible por defecto) -->
+        <section id="catalog-panel">
+            <div class="section-header">
+                <h2><i class="fas fa-store"></i> Nuestro Catálogo</h2>
+                <p id="catalog-description">Explora nuestros productos y agrega al carrito</p>
+            </div>
+            
+            <div id="catalog-products" class="catalog-grid">
+                <!-- Los productos del catálogo se mostrarán aquí -->
+                <div class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <h3>Catálogo vacío</h3>
+                    <p>No hay productos disponibles en este momento</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Catálogo Digital &copy; <span id="current-year"></span></p>
+            <p class="footer-note">
+                Esta aplicación funciona con Firebase. Los datos se guardan en la nube.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Carrito flotante -->
+    <div id="floating-cart" class="floating-cart">
+        <div class="floating-cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="floating-cart-count" class="floating-cart-count">0</span>
+        </div>
+    </div>
+
+    <!-- Contenedor de paginación -->
+    <div id="pagination-container" class="pagination-container hidden">
+        <div class="pagination">
+            <button id="prev-page" class="pagination-btn">
+                <i class="fas fa-chevron-left"></i> Anterior
+            </button>
+            <div class="pagination-info">
+                Página <span id="current-page-display">1</span> de <span id="total-pages-display">1</span>
+            </div>
+            <button id="next-page" class="pagination-btn">
+                Siguiente <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>

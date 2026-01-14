@@ -10,12 +10,15 @@ const apiRoutes = require('./routes/api');
 
 const app = express();
 
+// Configurar trust proxy para Render (esto soluciona el warning de express-rate-limit)
+app.set('trust proxy', 1);
+
 // Configurar CORS para producción
 const corsOptions = {
   origin: [
     'http://localhost:5500', // Desarrollo local
     'http://localhost:3000',
-    'https://livo-app.netlify.app', // CORREGIDO: Sin https:// duplicado
+    'https://livo-app.netlify.app', // Frontend en producción
     'https://*.vercel.app',
     'https://*.netlify.app'
   ],
@@ -30,7 +33,9 @@ app.use(helmet());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: 'Demasiadas solicitudes desde esta IP'
+  message: 'Demasiadas solicitudes desde esta IP',
+  standardHeaders: true,
+  legacyHeaders: false
 });
 app.use('/api/', limiter);
 
