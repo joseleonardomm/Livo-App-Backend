@@ -1,0 +1,21 @@
+# En la raíz de Livo-App-Backend
+cat > render.yaml << 'EOF'
+services:
+  - type: web
+    name: livo-app-backend
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REPLICATE_API_TOKEN
+        sync: false
+      - key: PORT
+        value: 10000
+    healthCheckPath: /api/health
+    autoDeploy: true
+    regions:
+      - ohio
+    plan: free
+EOF
