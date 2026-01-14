@@ -15,7 +15,7 @@ const corsOptions = {
   origin: [
     'http://localhost:5500', // Desarrollo local
     'http://localhost:3000',
-    'https://https://livo-app.netlify.app/', // Reemplaza con tu frontend
+    'https://livo-app.netlify.app', // CORREGIDO: Sin https:// duplicado
     'https://*.vercel.app',
     'https://*.netlify.app'
   ],
