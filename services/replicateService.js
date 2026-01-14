@@ -46,7 +46,7 @@ class ReplicateService {
                 temperature: this.temperature,
                 top_p: this.topP,
                 repetition_penalty: 1.15,
-                stop: ["```", "</response>", "===="]
+                stop: ["\`\`\`", "</response>", "===="]
             };
 
             // Ejecutar con timeout
@@ -203,9 +203,9 @@ class ReplicateService {
         return `${prompt}
 
 IMPORTANTE: Tu respuesta DEBE contener EXACTAMENTE tres bloques de código en este orden:
-1. Bloque HTML (entre ```html y ```)
-2. Bloque CSS (entre ```css y ```)
-3. Bloque JavaScript (entre ```javascript y ```)
+1. Bloque HTML (entre \`\`\`html y \`\`\`)
+2. Bloque CSS (entre \`\`\`css y \`\`\`)
+3. Bloque JavaScript (entre \`\`\`javascript y \`\`\`)
 
 Ejemplo de formato:
 \`\`\`html
